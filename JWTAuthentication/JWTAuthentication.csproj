@@ -1,0 +1,41 @@
+<Project Sdk="Microsoft.NET.Sdk.Web">
+
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <AssemblyName>SMNETCORE.JWTAuthenticationApi</AssemblyName>
+    <AssemblyTitle>SMNetCore.JWTAuthenticationApi</AssemblyTitle>
+    <RootNamespace>SMNetCore.JWTAuthentication</RootNamespace>
+  </PropertyGroup>
+	<ItemGroup>
+		<PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="10.0.5" />
+		<PackageReference Include="Google.Apis.Auth" Version="1.73.0" />
+		<PackageReference Include="Microsoft.AspNetCore.Authentication.Google" Version="10.0.6" />
+		<PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="10.0.6" />
+		<PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="10.0.6" />
+		<PackageReference Include="Microsoft.EntityFrameworkCore" Version="10.0.6" />
+		<PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="10.0.6">
+			<PrivateAssets>all</PrivateAssets>
+			<IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+		</PackageReference>
+		<PackageReference Include="Microsoft.EntityFrameworkCore.Relational.Design" Version="1.1.6" />
+		<PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="10.0.6" />
+		<PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="10.0.6">
+			<PrivateAssets>all</PrivateAssets>
+			<IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+		</PackageReference>
+		<PackageReference Include="Microsoft.Extensions.Configuration" Version="10.0.7" />
+		<PackageReference Include="Microsoft.Extensions.Configuration.Abstractions" Version="10.0.7" />
+		<PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="10.0.7" />
+		<PackageReference Include="Newtonsoft.Json" Version="13.0.4" />
+		<PackageReference Include="OpenIddict.EntityFrameworkCore" Version="7.4.0" />
+		<PackageReference Include="System.Configuration.ConfigurationManager" Version="10.0.7" />
+	</ItemGroup>
+	<ItemGroup>
+	  <Folder Include="Configs\" />
+	  <Folder Include="Controllers\" />
+	  <Folder Include="Startup\" />
+	</ItemGroup>
+
+</Project>
