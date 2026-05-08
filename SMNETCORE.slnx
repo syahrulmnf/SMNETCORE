@@ -6,15 +6,11 @@
     <Project Path="JWTDAL/JWTDAL.csproj" />
     <Project Path="JWTService/JWTService.csproj" />
   </Folder>
-  <Folder Name="/CICD/" />
-  <Folder Name="/Container/" />
   <Folder Name="/DAL/">
     <Project Path="BaseDAL/BaseDAL.csproj" />
     <Project Path="MainCatalogue/MainCatalogue.csproj" />
   </Folder>
-  <Folder Name="/JS/" />
   <Folder Name="/SMNETCORE/">
     <Project Path="Common/Common.csproj" />
   </Folder>
-  <Folder Name="/Test/" />
 </Solution>
