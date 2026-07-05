@@ -1,0 +1,33 @@
+{
+  "Logging": {
+    "LogLevel": {
+      "Default": "Information",
+      "Microsoft.AspNetCore": "Warning"
+    }
+  },
+
+  "Authentication": {
+    "Google": {
+      "ClientId": "",
+      "ClientSecret": "",
+      "CallbackPath": ""
+    },
+    "JWT": {
+
+    },
+    "Redis": {
+      "MyRedisConStr": "localhost:6379",
+      "MyRedisInstanceStr": "MyRedisInstance"
+    },
+    "AppSettings": {
+      "RedisCacheServer": "127.0.0.1",
+      "RedisCachePort": "6379",
+      "RedisSecreetPassword": "",
+      "UseRedisCache": "true",
+      "EnableLoggedInResetCache": "true",
+      "CacheDefaultTimeoutMins": "8000",
+      "IsTest": "true"
+
+    }
+  }
+}

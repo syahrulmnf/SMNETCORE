@@ -1,4 +1,4 @@
-﻿namespace SMNetCore.JWTService
+﻿namespace SMNETCORE.JWTService
 {
     public class Class1
     {

@@ -1,16 +1,38 @@
 <Solution>
   <Folder Name="/API/">
-    <Project Path="JWTAuthentication/JWTAuthentication.csproj" />
+    <Project Path="D:/SWF_Syahrul/core/SMNETCORE/BaseAPI/BaseAPI.csproj" Id="cce1ec1d-274d-4cc2-878e-4dfbd56ee904" />
+    <Project Path="D:/SWF_Syahrul/core/SMNETCORE/JWTAuthentication/JWTAuthentication.csproj" />
   </Folder>
-  <Folder Name="/Authentication/">
-    <Project Path="JWTDAL/JWTDAL.csproj" />
-    <Project Path="JWTService/JWTService.csproj" />
-  </Folder>
+  <Folder Name="/Authentication/" />
   <Folder Name="/DAL/">
-    <Project Path="BaseDAL/BaseDAL.csproj" />
-    <Project Path="MainCatalogue/MainCatalogue.csproj" />
+    <Project Path="D:/SWF_Syahrul/core/SMNETCORE/BaseDAL/BaseDAL.csproj" />
+  </Folder>
+  <Folder Name="/DAL/Implements/">
+    <Project Path="D:/SWF_Syahrul/core/SMNETCORE/MainCatalogue/SMNETCORE.DAL.MainCatalogue.csproj" />
+    <Project Path="D:/SWF_Syahrul/core/SMNETCORE/SMNETCORE.DAL.JWTDAL/SMNETCORE.DAL.JWTDAL.csproj" Id="30e96803-6bb8-4a6a-90c6-379bd28e63c2" />
+    <Project Path="D:/SWF_Syahrul/core/SMNETCORE/TenantDAL/SMNETCORE.DAL.TenantDAL.csproj" Id="425764d1-a2f4-459d-9079-44efa44de07e" />
+  </Folder>
+  <Folder Name="/DAL/Interfaces/">
+    <Project Path="D:/SWF_Syahrul/core/SMNETCORE/JWTDAL.Interface/SMNETCORE.DAL.JWTDAL.Interface.csproj" Id="26728367-e290-4170-9254-75108e25d92c" />
+    <Project Path="D:/SWF_Syahrul/core/SMNETCORE/SMNETCORE.DAL.MainCatalogue.Interface/SMNETCORE.DAL.MainCatalogue.Interface.csproj" Id="27788780-c08a-46fe-b904-0878b5bfa103" />
+    <Project Path="D:/SWF_Syahrul/core/SMNETCORE/TenantDAL.Interface/SMNETCORE.DAL.TenantDAL.Interface.csproj" Id="43c8bc42-0136-424c-b380-45f53e6d2cb1" />
+  </Folder>
+  <Folder Name="/Services/">
+    <Project Path="D:/SWF_Syahrul/core/SMNETCORE/SMNETCORE.Service.BaseService/SMNETCORE.Services.BaseService.csproj" Id="16f0ce14-5bde-4827-a7ba-f0a32233f521" />
+  </Folder>
+  <Folder Name="/Services/Implements/">
+    <Project Path="D:/SWF_Syahrul/core/SMNETCORE/SMNETCORE.JWTService/SMNETCORE.Services.JWTService.csproj" Id="6c54d97c-51f0-4a6d-bc67-2c65825a5f14" />
+  </Folder>
+  <Folder Name="/Services/Interfaces/">
+    <Project Path="D:/SWF_Syahrul/core/SMNETCORE/JJWTService.Interface/JWTService.Services.Interface.csproj" Id="2e6a3286-0994-4a7c-9ae6-15b96af8fd46" />
   </Folder>
   <Folder Name="/SMNETCORE/">
-    <Project Path="Common/Common.csproj" />
+    <Project Path="D:/SWF_Syahrul/core/SMNETCORE/Async/Async.csproj" Id="89c8b490-28e6-40f0-81a3-c73478ce2dd2" />
+    <Project Path="D:/SWF_Syahrul/core/SMNETCORE/Cache/Cache.csproj" Id="7ca4ef11-5564-496e-a8a0-887a230326c7" />
+    <Project Path="D:/SWF_Syahrul/core/SMNETCORE/Common/Common.csproj" />
+    <Project Path="D:/SWF_Syahrul/core/SMNETCORE/DataType/DataType.csproj" Id="7604a661-9313-4647-a0d2-4b65d2726a13" />
+    <Project Path="D:/SWF_Syahrul/core/SMNETCORE/Logging/Logging.csproj" Id="9b6d6f03-6b93-46e8-85cf-757fcff369d5" />
+    <Project Path="D:/SWF_Syahrul/core/SMNETCORE/Messages/Messages.csproj" Id="dba94af1-845a-4c39-a559-d3e638f17263" />
+    <Project Path="D:/SWF_Syahrul/core/SMNETCORE/Serializer/Serializer.csproj" Id="3cea5b87-b7e0-4910-a302-bb400d9d15f1" />
   </Folder>
 </Solution>

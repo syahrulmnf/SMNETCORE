@@ -1,0 +1,30 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+
+	  <AssemblyName>SMNETCORE.MainCatalogue</AssemblyName>
+	  <AssemblyTitle>SMNETCORE.MainCatalogue</AssemblyTitle>
+	  <RootNamespace>SMNETCORE.MainCatalogue</RootNamespace>
+  </PropertyGroup>
+	<ItemGroup>
+		<PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="10.0.7" />
+		<PackageReference Include="Microsoft.Extensions.Configuration" Version="10.0.7" />
+		<PackageReference Include="Microsoft.Extensions.Configuration.Abstractions" Version="10.0.7" />
+		<PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="10.0.7" />
+		<PackageReference Include="MySql.EntityFrameworkCore" Version="10.0.7" />
+		<PackageReference Include="Newtonsoft.Json" Version="13.0.4" />
+		<PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="10.0.1" />
+		<PackageReference Include="System.Configuration.ConfigurationManager" Version="10.0.7" />
+	</ItemGroup>
+	<ItemGroup>
+	  <ProjectReference Include="..\Async\Async.csproj" />
+	  <ProjectReference Include="..\BaseDAL\BaseDAL.csproj" />
+	  <ProjectReference Include="..\Cache\Cache.csproj" />
+	  <ProjectReference Include="..\Common\Common.csproj" />
+	  <ProjectReference Include="..\DataType\DataType.csproj" />
+	  <ProjectReference Include="..\SMNETCORE.DAL.MainCatalogue.Interface\SMNETCORE.DAL.MainCatalogue.Interface.csproj" />
+	</ItemGroup>
+</Project>

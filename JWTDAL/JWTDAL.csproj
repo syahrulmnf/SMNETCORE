@@ -6,8 +6,8 @@
 	<Nullable>enable</Nullable>
 
 	<AssemblyName>SMNETCORE.JWTDAL</AssemblyName>
-	<AssemblyTitle>SMNetCore.JWTDAL</AssemblyTitle>
-	<RootNamespace>SMNetCore.JWTDAL</RootNamespace>
+	<AssemblyTitle>SMNETCORE.JWTDAL</AssemblyTitle>
+	<RootNamespace>SMNETCORE.JWTDAL</RootNamespace>
   </PropertyGroup>
 	<ItemGroup>
 

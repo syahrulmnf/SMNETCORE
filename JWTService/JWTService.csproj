@@ -6,8 +6,8 @@
     <Nullable>enable</Nullable>
 
 	  <AssemblyName>SMNETCORE.JWTService</AssemblyName>
-	  <AssemblyTitle>SMNetCore.JWTService</AssemblyTitle>
-	  <RootNamespace>SMNetCore.JWTService</RootNamespace>
+	  <AssemblyTitle>SMNETCORE.JWTService</AssemblyTitle>
+	  <RootNamespace>SMNETCORE.JWTService</RootNamespace>
   </PropertyGroup>
 	<ItemGroup>
 

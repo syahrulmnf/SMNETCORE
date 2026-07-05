@@ -3,3 +3,5 @@
 */bin/*
 
 */obj/*
+*/*.orig
+/JWTAuthentication/app.settings.Deployments.json

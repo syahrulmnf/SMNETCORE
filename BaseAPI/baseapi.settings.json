@@ -1,0 +1,28 @@
+{
+  "Logging": {
+    "LogLevel": {
+      "Default": "Information",
+      "Microsoft.AspNetCore": "Warning"
+    }
+  },
+  "AllowedHosts": "*",
+  "ConnectionStrings": {
+    "MainCatalogueContext": "Server=LAPTOP-N4GILK4J\\MSSQ17;Database=JWT_Test;User Id=sa;Password=Qwertyx123456!;Trusted_Connection=True;TrustServerCertificate=True;",
+    "MainCataloguePostgres": "Host=localhost;Port=5432;Database=maincataloguedb;Username=admin;Password=secret123"
+  },
+    "Redis": {
+      "MyRedisConStr": "localhost:6379",
+      "MyRedisInstanceStr": "MyRedisInstance"
+    },
+    "AppSettings": {
+      "RedisCacheServer": "127.0.0.1",
+      "RedisCachePort": "6379",
+      "RedisSecreetPassword": "",
+      "UseRedisCache": "true",
+      "EnableLoggedInResetCache": "true",
+      "CacheDefaultTimeoutMins": "8000",
+      "IsTest": "true"
+
+    }
+  }
+}
