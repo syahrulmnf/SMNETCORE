@@ -1,6 +1,6 @@
 ﻿namespace SMNETCORE.JWTAuthentication.Configs
 {
-    public class BaseAPIJWT
+    public class JWTAuthenticationJWT:SMNETCORE.BaseAPI.Configs.JWT
     {
     }
 }

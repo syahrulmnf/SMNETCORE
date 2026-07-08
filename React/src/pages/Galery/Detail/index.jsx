@@ -1,4 +1,4 @@
-export default function GaleryDetail() {
+export default function Galery Detail() {
     return (
         <div>
             <h1>Detail</h1>

@@ -1,15 +1,6 @@
 ﻿namespace SMNETCORE.JWTAuthentication.Configs
 {
-    public class Redis
+    public class Redis:SMNETCORE.BaseAPI.Configs.BaseAPIRedis
     {
-        public void ConfigureRedis(WebApplicationBuilder builder)
-        {
-
-            builder.Services.AddStackExchangeRedisCache(options =>
-            {
-                options.Configuration = builder.Configuration.GetConnectionString("Redis:MyRedisConStr");
-                options.InstanceName = builder.Configuration.GetConnectionString("Redis:MyRedisInstanceStr");
-            });
-        }
     }
 }

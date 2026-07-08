@@ -1,7 +1,6 @@
 using Azure;
-using BaseAPI.Utils;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
 using SMNETCORE.BaseAPI.Utils;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using SMNETCORE.Logging;
 using JWTConfigs = SMNETCORE.JWTAuthentication.Configs;
 using WebConfigs = SMNETCORE.BaseAPI.Configs;
@@ -23,7 +22,7 @@ builder.Services.AddAuthorization();
 JWTConfigs.GoogleConfig.Config(builder);
 WebUtils.AddDALImplementations(builder.Services);
 WebUtils.AddServicesImplementations(builder.Services);
-JWTConfigs.Tenant.Injections(builder);
+JWTConfigs.Tenant.BaseApiInjections(builder);
 
 
 var app = builder.Build();

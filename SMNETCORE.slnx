@@ -1,5 +1,6 @@
 <Solution>
   <Folder Name="/API/">
+    <Project Path="ADONS/ADONS.csproj" Id="1e551349-3f1c-4117-b298-e2ce2219e0a3" />
     <Project Path="D:/SWF_Syahrul/core/SMNETCORE/BaseAPI/BaseAPI.csproj" Id="cce1ec1d-274d-4cc2-878e-4dfbd56ee904" />
     <Project Path="D:/SWF_Syahrul/core/SMNETCORE/JWTAuthentication/JWTAuthentication.csproj" />
   </Folder>
