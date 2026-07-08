@@ -13,12 +13,12 @@ using System.Globalization;
 
 namespace SMNETCORE.Async.Threading
 {
-    public class CheckProcessorRequest<S, T> : ThreadParamBase
-    where S : new()
+    public class CheckProcessorRequest<R, T> : ThreadParamBase
+    where R : new()
     where T : new()
     {
         public CheckProcessorRequest() { }
-        public CheckProcessorRequest(IEnumerable<KeyValuePair<ThreadTask, ThreadParams<S, T>>> requests, bool endRequestStatus = false, int? maxNumber = 0) : base()
+        public CheckProcessorRequest(IEnumerable<KeyValuePair<ThreadTask, ThreadParams<R, T>>> requests, bool endRequestStatus = false, int? maxNumber = 0) : base()
         {
             Request = requests;
             EndRequestStatus = endRequestStatus;
@@ -27,7 +27,7 @@ namespace SMNETCORE.Async.Threading
 
         public int? MaxNumber { get; set; }
         public bool EndRequestStatus { get; set; }
-        public IEnumerable<KeyValuePair<ThreadTask, ThreadParams<S, T>>> Request { get; set; }
+        public IEnumerable<KeyValuePair<ThreadTask, ThreadParams<R, T>>> Request { get; set; }
     }
 
     public class ChacheThreadableRequest : ThreadParamBase

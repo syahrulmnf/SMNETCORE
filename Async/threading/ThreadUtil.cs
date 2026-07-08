@@ -12,48 +12,188 @@ using System.Globalization;
 
 namespace SMNETCORE.Async.Threading
 {
-    public static class ThreadUtility
+    public class ThreadUtility
     {
-        public static IEnumerable<KeyValuePair<ThreadTask, ThreadParams<S, T>>> CheckActive<S, T>(this IEnumerable<KeyValuePair<ThreadTask, ThreadParams<S, T>>> requests, bool endRequestStatus = false, int? maxNumber = 0, bool useRealThread = false)
-            where S : new()
-            where T : new()
+        [ThreadStatic]
+        public static ThreadUtility Instance = new ThreadUtility();
+
+
+        public void CheckActiveBase<N, M>(IEnumerable<KeyValuePair<N, M>> requests, bool endRequestStatus = false, int? maxNumber = 0, bool useRealThread = false)
+            where N : ThreadTask
+            where M : ThreadParamBase
         {
-            if (!requests.IsValid()) return requests;
-            if (!maxNumber.HasValue || maxNumber == 0) maxNumber = Globals.MaximumNumberOfThreadInOperation;
-
-            ThreadParams<S, T> baseParam = requests.First().Value;
-            baseParam.CheckActive(requests, endRequestStatus, maxNumber, useRealThread);
-            return requests;
-        }
-
-        public static IEnumerable<KeyValuePair<ThreadTask, P>> CheckActiveParam<P>(this IEnumerable<KeyValuePair<ThreadTask, P>> requests, bool endRequestStatus = false, int? maxNumber = 0, bool useRealThread = false)
-            where P : ThreadParamBase, new()
-        {
-            if (!requests.IsValid()) return requests;
-            if (!maxNumber.HasValue || maxNumber == 0) maxNumber = Globals.MaximumNumberOfThreadInOperation;
-
-            P baseParam = requests.First().Value;
-            baseParam.CheckActiveBase(requests, endRequestStatus, maxNumber, useRealThread);
-            return requests;
-        }
-
-        public static CheckProcessorRequest<S, T> CheckActiveThread<S, T>(this IEnumerable<KeyValuePair<ThreadTask, ThreadParams<S, T>>> requests, bool endRequestStatus = false, int? maxNumber = 0)
-            where S : new()
-            where T : new()
-        {
-            CheckProcessorRequest<S, T> requestThread = new CheckProcessorRequest<S, T>(requests, endRequestStatus, maxNumber);
-            if (!requestThread.Request.IsValid())
+            maxNumber = maxNumber == null || maxNumber == 0 ? Globals.MaximumNumberOfThreadInOperation : maxNumber;
+            try
             {
-                requestThread.Finish();
-                return requestThread;
-            }
-            if (!requestThread.MaxNumber.HasValue || requestThread.MaxNumber == 0) requestThread.MaxNumber = Globals.MaximumNumberOfThreadInOperation;
+                bool isAlive = true;
+                while (isAlive)
+                {
+                    var numberOfNotAliveTask = requests.Where(d => !d.Value.IsStart && !d.Value.IsFinished).Count();
 
-            ThreadParams<S, T> baseParam = requestThread.Request.First().Value;
-            requestThread = new CheckProcessorRequest<S, T>(requestThread.Request, requestThread.EndRequestStatus, requestThread.MaxNumber);
-            ThreadTask tsk = new ThreadTask(baseParam.OrganisationCode, baseParam.CheckActiveThread, requestThread);
-            tsk.Start();
-            return requestThread;
+                    if (numberOfNotAliveTask > 0)
+                    {
+                        var numberStartedNotFinishedTask = requests.Where(d => d.Value.IsStart && !d.Value.IsFinished).Count();
+                        var availableTasks = maxNumber - numberStartedNotFinishedTask;
+                        if (availableTasks > 0 && (numberStartedNotFinishedTask > 0 || numberOfNotAliveTask > 0))
+                        {
+                            availableTasks = availableTasks > numberOfNotAliveTask ? numberOfNotAliveTask : availableTasks;
+
+                            int aliveTasks = 0;
+                            foreach (var d in requests)
+                            {
+                                if (!d.Value.IsFinished && !d.Value.IsStart)
+                                {
+                                    d.Value.Start();
+                                    if (useRealThread) d.Key.StartUseRealThread(); else d.Key.Start();
+                                    aliveTasks += 1;
+
+                                }
+                                if (aliveTasks > availableTasks) break;
+                            }
+                            Thread.Sleep(50);
+                        }
+                        else
+                        {
+                            if (!endRequestStatus) break;
+                        }
+
+                    }
+                    else
+                    {
+                        if (!endRequestStatus) break;
+                    }
+
+                    isAlive = requests.Where(d => d.Value.IsStart && !d.Value.IsFinished).Any();
+
+
+                    Thread.Sleep(50);
+                }
+
+                if (requests.Any(d => d.Value.FeedbackErrors.isError))
+                {
+                    foreach (var dProc in requests)
+                    {
+                        if (dProc.Value.FeedbackErrors.isError)
+                        {
+                            foreach (var msgError in dProc.Value.FeedbackErrors)
+                            {
+                                Logger.LogError(msgError, LogCategoryType.DataRepository);
+                            }
+                        }
+                    }
+                    throw new Exception("Errors found in thread excetions");
+                }
+            }
+            catch (Exception exc)
+            {
+                Logger.LogError(exc, LogCategoryType.Common);
+            }
+        }
+
+       
+        public void CheckActive<N, M, R, T>(IEnumerable<KeyValuePair<N, M>> requests, bool endRequestStatus = false, int? maxNumber = 0, bool useRealThread = false)
+            where N : ThreadTask
+            where M : ThreadParams<R, T>
+            where R : new()
+            where T : new()
+
+        {
+            maxNumber = maxNumber == null || maxNumber == 0 ? Globals.MaximumNumberOfThreadInOperation : maxNumber;
+            try
+            {
+                bool isAlive = true;
+                while (isAlive)
+                {
+                    var numberOfNotAliveTask = requests.Where(d => !d.Value.IsStart && !d.Value.IsFinished).Count();
+
+                    if (numberOfNotAliveTask > 0)
+                    {
+                        var numberStartedNotFinishedTask = requests.Where(d => d.Value.IsStart && !d.Value.IsFinished).Count();
+                        var availableTasks = maxNumber - numberStartedNotFinishedTask;
+                        if (availableTasks > 0 && (numberStartedNotFinishedTask > 0 || numberOfNotAliveTask > 0))
+                        {
+                            availableTasks = availableTasks > numberOfNotAliveTask ? numberOfNotAliveTask : availableTasks;
+
+                            int aliveTasks = 0;
+                            foreach (var d in requests)
+                            {
+                                if (!d.Value.IsFinished && !d.Value.IsStart)
+                                {
+                                    d.Value.Start();
+                                    if (useRealThread) d.Key.StartUseRealThread(); else d.Key.Start();
+                                    aliveTasks += 1;
+
+                                }
+                                if (aliveTasks > availableTasks) break;
+                            }
+                            Thread.Sleep(50);
+                        }
+                        else
+                        {
+                            if (!endRequestStatus) break;
+                        }
+
+                    }
+                    else
+                    {
+                        if (!endRequestStatus) break;
+                    }
+
+                    isAlive = requests.Where(d => d.Value.IsStart && !d.Value.IsFinished).Any();
+
+
+                    Thread.Sleep(50);
+                }
+
+                if (requests.Any(d => d.Value.FeedbackErrors.isError))
+                {
+                    foreach (var dProc in requests)
+                    {
+                        if (dProc.Value.FeedbackErrors.isError)
+                        {
+                            foreach (var msgError in dProc.Value.FeedbackErrors)
+                            {
+                                Logger.LogError(msgError, LogCategoryType.DataRepository);
+                            }
+                        }
+                    }
+                    throw new Exception("Errors found in thread excetions");
+                }
+            }
+            catch (Exception exc)
+            {
+                Logger.LogError(exc, LogCategoryType.Common);
+            }
+        }
+
+        public void CheckActiveThread<R, T>(object data)
+ 
+            where R : new()
+            where T : new()
+        {
+            CheckProcessorRequest<R, T> request = new CheckProcessorRequest<R, T>();
+            try
+            {
+                request = (CheckProcessorRequest<R, T>)data;
+                request.Start();
+                ThreadUtility.Instance.CheckActive<ThreadTask, ThreadParams<R, T>, R, T>(request.Request, request.EndRequestStatus, request.MaxNumber);
+            }
+            catch (Exception exc)
+            {
+                if (request.OnceAgain)
+                {
+                    request.OnceAgain = false;
+                    ThreadUtility.Instance.CheckActiveThread<R, T>(request);
+                }
+                else
+                {
+                    request.Finish(exc);
+                }
+            }
+            finally
+            {
+                request.Finish();
+            }
         }
     }
 }

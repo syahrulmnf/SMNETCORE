@@ -7,7 +7,7 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace BaseAPI.Utils
+namespace SMNETCORE.BaseAPI.Utils
 {
     public class AuthMiddleware
     {

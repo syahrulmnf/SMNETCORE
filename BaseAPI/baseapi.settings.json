@@ -14,15 +14,21 @@
       "MyRedisConStr": "localhost:6379",
       "MyRedisInstanceStr": "MyRedisInstance"
     },
-    "AppSettings": {
-      "RedisCacheServer": "127.0.0.1",
-      "RedisCachePort": "6379",
-      "RedisSecreetPassword": "",
-      "UseRedisCache": "true",
-      "EnableLoggedInResetCache": "true",
-      "CacheDefaultTimeoutMins": "8000",
-      "IsTest": "true"
+  "AppSettings": {
+    "RedisCacheServer": "127.0.0.1",
+    "RedisCachePort": "6379",
+    "RedisSecreetPassword": "",
+    "UseRedisCache": "true",
+    "EnableLoggedInResetCache": "true",
+    "CacheDefaultTimeoutMins": "8000",
+    "IsTest": "true"
 
-    }
+  },
+  "S3Config": {
+    "AccessKey": "",
+    "SecretKey": "",
+    "BucketName": "",
+    "Region": ""
   }
+  
 }

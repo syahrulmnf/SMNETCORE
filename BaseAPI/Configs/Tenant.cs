@@ -18,7 +18,7 @@ namespace SMNETCORE.BaseAPI.Configs
             builder.Services.AddDbContext<MainCatalogueDALContext>(options =>
             {
                 options.UseSqlServer(
-                    builder.Configuration.GetConnectionString("MainCatalogueContext"));
+                    builder.Configuration.GetValue<string>("MainCatalogueContext"));
             });
             builder.Services.AddScoped<TenantDTOModel>();
         }

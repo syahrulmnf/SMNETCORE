@@ -9,7 +9,7 @@ using System.Collections.Generic;
 using System.Text;
 using FirebaseAdmin.Auth;
 
-namespace BaseAPI.Configs
+namespace SMNETCORE.BaseAPI.Configs
 {
     internal class FirebaseConfigs
     {

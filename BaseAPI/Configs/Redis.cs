@@ -11,8 +11,8 @@ namespace SMNETCORE.BaseAPI.Configs
 
             builder.Services.AddStackExchangeRedisCache(options =>
             {
-                options.Configuration = builder.Configuration.GetConnectionString("Redis:MyRedisConStr");
-                options.InstanceName = builder.Configuration.GetConnectionString("Redis:MyRedisInstanceStr");
+                options.Configuration = builder.Configuration.GetValue<string>("Redis:MyRedisConStr");
+                options.InstanceName = builder.Configuration.GetValue<string>("Redis:MyRedisInstanceStr");
             });
         }
     }
