@@ -1,11 +1,13 @@
 package repositories
 
 import (
+	"auth-go/configs"
+	drivers "auth-go/repositories/drivers"
 	"context"
+	"errors"
 	"log"
 	"time"
 
-	"github.com/oracle-samples/gorm-oracle/oracle"
 	"gorm.io/driver/mysql"
 	"gorm.io/driver/postgres"
 	"gorm.io/driver/sqlite"
@@ -14,31 +16,37 @@ import (
 )
 
 type DBDriver struct {
-	DriverName   string
-	Host         string
-	Port         int
-	Username     string
-	Password     string
-	DatabaseName string
-	DB           *gorm.DB
+	DBConfig *configs.DBConfigs
+	DB       *gorm.DB
 }
 
-var DBDriversType []string = []string{
-	"mysql",
-	"postgres",
-	"sqlite",
-	"mssql",
-	"oracle",
+func (d *DBDriver) CreateByTenant(tenant string) error {
+	dbc, err := configs.GetDBConfigs(tenant)
+	if err != nil {
+		return err
+	}
+
+	return d.Create(dbc)
 }
 
-func (d *DBDriver) Connect() (*gorm.DB, error) {
+func (d *DBDriver) Create(db *configs.DBConfigs) error {
+	if db == nil {
+		return errors.New("database configuration is required")
+	}
+
+	d.DBConfig = db
+	return d.Connect()
+}
+
+func (d *DBDriver) Connect() error {
 	db, error := d.newConnection()
 	if error != nil {
-		return nil, error
+		return error
 	}
 	sqlDB, err := db.DB()
 	if err != nil {
 		log.Fatalf("Failed to extract sql.DB instance: %v", err)
+		return err
 	}
 
 	// 2. Create a context with a strict timeout for the ping operation
@@ -48,12 +56,14 @@ func (d *DBDriver) Connect() (*gorm.DB, error) {
 	// 3. Ping the database to verify the network connection is alive
 	if err := sqlDB.PingContext(ctx); err != nil {
 		log.Fatalf("Database connection is dead: %v", err)
+		return err
 	}
 	sqlDB.SetMaxOpenConns(50)
 	sqlDB.SetMaxIdleConns(10)
 	sqlDB.SetConnMaxLifetime(time.Hour)
 	sqlDB.SetConnMaxIdleTime(10 * time.Minute)
-	return db, nil
+	d.DB = db
+	return nil
 }
 
 func (d *DBDriver) CloseConnection() error {
@@ -69,9 +79,13 @@ func (d *DBDriver) ExecuteCommandTransaction(command string) error {
 }
 
 func (d *DBDriver) newConnection() (*gorm.DB, error) {
-	switch d.DriverName {
+	dbConfig := d.DBConfig
+	if dbConfig == nil {
+		panic("Error in connections")
+	}
+	switch dbConfig.Drivers {
 	case "mysql":
-		dsn := d.Username + ":" + d.Password + "@tcp(" + d.Host + ":" + string(d.Port) + ")/" + d.DatabaseName + "?parseTime=true"
+		dsn := dbConfig.User + ":" + dbConfig.Password + "@tcp(" + dbConfig.Host + ":" + dbConfig.Port + ")/" + dbConfig.DBName + "?parseTime=true"
 		db, err := gorm.Open(mysql.Open(dsn), &gorm.Config{})
 		if err != nil {
 			return nil, err
@@ -79,7 +93,7 @@ func (d *DBDriver) newConnection() (*gorm.DB, error) {
 
 		return db, nil
 	case "postgres":
-		dsn := "host=" + d.Host + " port=" + string(d.Port) + " user=" + d.Username + " password=" + d.Password + " dbname=" + d.DatabaseName + " sslmode=disable"
+		dsn := "host=" + dbConfig.Host + " port=" + dbConfig.Port + " user=" + dbConfig.User + " password=" + dbConfig.Password + " dbname=" + dbConfig.DBName + " sslmode=disable"
 		db, err := gorm.Open(postgres.Open(dsn), &gorm.Config{})
 		if err != nil {
 			return nil, err
@@ -87,14 +101,14 @@ func (d *DBDriver) newConnection() (*gorm.DB, error) {
 
 		return db, nil
 	case "sqlite":
-		db, err := gorm.Open(sqlite.Open(d.DatabaseName), &gorm.Config{})
+		db, err := gorm.Open(sqlite.Open(dbConfig.DBName), &gorm.Config{})
 		if err != nil {
 			return nil, err
 		}
 
 		return db, nil
 	case "mssql":
-		dsn := "sqlserver://" + d.Username + ":" + d.Password + "@" + d.Host + ":" + string(d.Port) + "?database=" + d.DatabaseName
+		dsn := "sqlserver://" + dbConfig.User + ":" + dbConfig.Password + "@" + dbConfig.Host + ":" + dbConfig.Port + "?database=" + dbConfig.DBName
 		db, err := gorm.Open(sqlserver.Open(dsn), &gorm.Config{})
 		if err != nil {
 			return nil, err
@@ -102,15 +116,10 @@ func (d *DBDriver) newConnection() (*gorm.DB, error) {
 
 		return db, nil
 	case "oracle":
-		dsn := d.Username + "/" + d.Password + "@" + d.Host + ":" + string(d.Port) + "/" + d.DatabaseName
-		db, err := gorm.Open(oracle.Open(dsn), &gorm.Config{})
-		if err != nil {
-			return nil, err
-		}
-
-		return db, nil
+		dsn := dbConfig.User + "/" + dbConfig.Password + "@" + dbConfig.Host + ":" + dbConfig.Port + "/" + dbConfig.DBName
+		return drivers.OpenOracle(dsn)
 	default:
-		return nil, nil
+		return nil, errors.New("unsupported database driver: " + dbConfig.Drivers)
 	}
 
 }

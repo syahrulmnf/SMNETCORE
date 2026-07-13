@@ -1,7 +1,6 @@
 package handlers
 
 import (
-	"auth-go/jwt"
 	"auth-go/middleware"
 
 	"github.com/gin-gonic/gin"
@@ -13,7 +12,7 @@ type TenantHandler struct {
 
 func (h *TenantHandler) Route(authorizedTenant, authRouterGroup *gin.RouterGroup) {
 
-	authorizedTenant.Use(jwt.ValidateRequest(), middleware.TenantMiddleware())
+	authorizedTenant.Use(middleware.ValidateRequest(), middleware.TenantMiddleware())
 	{
 		(*h).RegisterRouteAuth(authorizedTenant)
 		/*authorizedTenantApi.GET("/protected", func(c *gin.Context) {
@@ -24,7 +23,7 @@ func (h *TenantHandler) Route(authorizedTenant, authRouterGroup *gin.RouterGroup
 		})*/
 	}
 
-	authRouterGroup.Use(jwt.ValidateRequest(), middleware.TenantMiddleware())
+	authRouterGroup.Use(middleware.ValidateRequest(), middleware.TenantMiddleware())
 	{
 		(*h).RegisterRoute(authRouterGroup)
 

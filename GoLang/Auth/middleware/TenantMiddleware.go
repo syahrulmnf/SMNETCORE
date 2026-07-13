@@ -8,6 +8,8 @@ import (
 
 const TenantKey = "tenant"
 
+var TenantConfig map[string]map[string]string = nil
+
 func TenantMiddleware() gin.HandlerFunc {
 	return func(c *gin.Context) {
 
@@ -19,7 +21,6 @@ func TenantMiddleware() gin.HandlerFunc {
 			})
 			return
 		}
-
 		// Optional:
 		// Validate tenant from database/cache here.
 

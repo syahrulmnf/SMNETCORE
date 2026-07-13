@@ -12,9 +12,11 @@ type AuthRequestModel struct {
 }
 
 type JWTClaimsModel struct {
-	UserID   int      `json:"userid"`
+	UserID   int64    `json:"userid"`
 	Tenant   string   `json:"tenant"`
-	Role     []string `json:"role"`
+	Roles    []string `json:"roles"`
+	// Role is retained while clients transition from the previous singular claim.
+	Role     []string `json:"role,omitempty"`
 	Username string   `json:"username"`
 
 	jwt.RegisteredClaims

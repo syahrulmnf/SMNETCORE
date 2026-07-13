@@ -3,6 +3,7 @@ package configs
 import (
 	"encoding/json"
 	"os"
+	"time"
 )
 
 type AppConfigs struct {
@@ -15,6 +16,31 @@ func (c *AppConfigs) GetValue(key string) any {
 		return val
 	}
 	return nil
+}
+
+// ConfigMap returns a named configuration section as a string-keyed map.
+func ConfigMap(key string) (map[string]any, bool) {
+	value, ok := AppConfig.Values[key]
+	if !ok || value == nil {
+		return nil, false
+	}
+	mapped, ok := value.(map[string]any)
+	return mapped, ok
+}
+
+// ConfigString returns a string value from a configuration section.
+func ConfigString(values map[string]any, key string) string {
+	value, _ := values[key].(string)
+	return value
+}
+
+// ConfigDuration returns a positive duration, expressed as seconds in config.
+func ConfigDuration(values map[string]any, key string, fallback time.Duration) time.Duration {
+	seconds, ok := values[key].(float64)
+	if !ok || seconds <= 0 {
+		return fallback
+	}
+	return time.Duration(seconds * float64(time.Second))
 }
 
 func (c *AppConfigs) GetKeys() []string {
@@ -83,7 +109,7 @@ func (c *AppConfigs) Loads() AppConfigs {
 	// Load configurations from a source (e.g., file, environment variables)
 	// This is a placeholder for actual loading logic.
 	path := "./files/appconfigs.json"
-	if _, err := os.Stat(path); os.IsExist(err) {
+	if _, err := os.Stat(path); err == nil {
 		// If the file does not exist, create it with default values
 		var mapped map[string]any
 		data, err := os.ReadFile(path)
@@ -96,7 +122,7 @@ func (c *AppConfigs) Loads() AppConfigs {
 			return *c
 		}
 
-		c = &AppConfigs{
+		*c = AppConfigs{
 			Keys:   []string{},
 			Values: make(map[string]any),
 		}

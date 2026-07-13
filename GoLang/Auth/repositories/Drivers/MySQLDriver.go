@@ -1,4 +1,4 @@
-package repositories
+package drivers
 
 import "database/sql"
 
