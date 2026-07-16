@@ -15,12 +15,6 @@ import (
 	"gorm.io/gorm"
 )
 
-var (
-	ErrUserRepositoryNotInitialized = errors.New("user repository is not initialized")
-	ErrInvalidCredentials           = errors.New("invalid username or password")
-	ErrUserNotAllowedForTenant      = errors.New("user is not allowed to log in to this tenant")
-)
-
 // UsersRepo provides credential and tenant-membership queries for users.
 type UsersRepo struct {
 	Driver *DBDriver
@@ -86,9 +80,10 @@ func (u *UsersRepo) GetUserTenants(userID int64) ([]authgorm.UserTenantLoginTabl
 		return nil, err
 	}
 	var memberships []authgorm.UserTenantLoginTable
-	if err := db.Where("user_id = ? AND deleted = ? AND active = ? AND allow_login = ?", userID, false, true, true).
-		Find(&memberships).Error; err != nil {
-		return nil, err
+	res := db.Where("user_id = ? AND deleted = ? AND active = ? AND allow_login = ?", userID, false, true, true).
+		Find(&memberships)
+	if res.Error != nil {
+		return nil, res.Error
 	}
 	return memberships, nil
 }
@@ -149,6 +144,24 @@ func (u *UsersRepo) ExpireLoginCred(token, tenant string, userID int64) error {
 		return gorm.ErrRecordNotFound
 	}
 	return nil
+}
+
+// GetLoginCred marks the active credential for a token as logged out.
+func (u *UsersRepo) GetLoginCred(token, tenant string, userID int64) (*authgorm.LoginCred, error) {
+	db, err := u.db()
+	if err != nil {
+		return nil, err
+	}
+
+	var results authgorm.LoginCred
+	rst := db.Where("tokens = ? AND tenant = ? AND user_id = ? AND active = ?", token, tenant, userID, true).First(&results)
+	if rst.Error != nil {
+		return nil, rst.Error
+	}
+	if &results == nil {
+		return nil, gorm.ErrRecordNotFound
+	}
+	return &results, nil
 }
 
 // VerifyLogin validates the user's password and confirms access to tenant.

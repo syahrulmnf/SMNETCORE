@@ -2,7 +2,7 @@ package repositories
 
 import (
 	"auth-go/configs"
-	"auth-go/gorm"
+	gormmodel "auth-go/gorm"
 	"errors"
 )
 
@@ -46,14 +46,14 @@ func (t *TenantRepo) Create(db *configs.DBConfigs) error {
 }
 
 // GetTenant returns the tenant record whose Name matches tenant.
-func (t *TenantRepo) GetTenant(tenant string) (gorm.TenantTable, error) {
+func (t *TenantRepo) GetTenant(tenant string) (gormmodel.TenantTable, error) {
 	if t == nil || t.Driver == nil || t.Driver.DB == nil {
-		return gorm.TenantTable{}, errors.New("tenant repository is not initialized")
+		return gormmodel.TenantTable{}, errors.New("tenant repository is not initialized")
 	}
 
-	var tenantTable gorm.TenantTable
+	var tenantTable gormmodel.TenantTable
 	if err := t.Driver.DB.Where("name = ?", tenant).First(&tenantTable).Error; err != nil {
-		return gorm.TenantTable{}, err
+		return gormmodel.TenantTable{}, err
 	}
 
 	t.Tenant = tenantTable.Name

@@ -20,3 +20,10 @@ func SplitString(value, separator string) []string {
 	}
 	return roles
 }
+
+func Format(template string, values map[string]string) string {
+	for k, v := range values {
+		template = strings.ReplaceAll(template, "{"+k+"}", v)
+	}
+	return template
+}

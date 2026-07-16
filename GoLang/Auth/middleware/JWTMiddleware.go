@@ -1,6 +1,7 @@
 package middleware
 
 import (
+	"auth-go/cache"
 	"auth-go/configs"
 	"auth-go/logger"
 	models "auth-go/models/Auth"
@@ -22,14 +23,14 @@ func RequirePermission(roles []string) gin.HandlerFunc {
 	return func(c *gin.Context) {
 		tenant := c.Param("tenant")
 		claims := c.MustGet(ClaimsKey).(*models.JWTClaimsModel)
-		if claims == nil || tenant == "" || len(claimRoles(*claims)) == 0 {
+		if claims == nil || tenant == "" || len(claimRoles(claims)) == 0 {
 			c.AbortWithStatusJSON(401, gin.H{
 				"message": "Unauthorized",
 			})
 			return
 		}
 
-		for _, p := range claimRoles(*claims) {
+		for _, p := range claimRoles(claims) {
 			if slices.Contains(roles, p) {
 				c.Next()
 				return
@@ -93,8 +94,8 @@ func ValidateRequest() gin.HandlerFunc {
 		}
 
 		token := strings.TrimPrefix(header, "Bearer ")
-
 		claims, err := ValidateToken(token, secret)
+
 		if err != nil {
 			c.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{
 				"message": "invalid authorization",
@@ -109,10 +110,56 @@ func ValidateRequest() gin.HandlerFunc {
 			return
 		}
 
+		if IsTokenExpired(token, tenant, claims.UserID) {
+			c.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{
+				"message": "invalid authorization",
+			})
+			return
+		}
 		c.Set(ClaimsKey, claims)
 
 		c.Next()
 	}
+
+}
+
+func IsTokenExpired(token, tenant string, UserId int64) bool {
+	isExpired := make(chan bool, 2)
+	go func(tokenP string) {
+		exp := cache.IsJWTExpired(tokenP)
+		isExpired <- exp
+	}(token)
+
+	go func(tokenP, tenantP string, UserIdP int64) {
+		usrRepo := &repositories.UsersRepo{}
+		erP1 := usrRepo.CreateByTenant(tenantP)
+		if erP1 != nil {
+			isExpired <- true
+			return
+		}
+
+		cred, erP2 := usrRepo.GetLoginCred(tokenP, tenantP, UserIdP)
+		if erP2 != nil || cred == nil {
+			isExpired <- true
+			return
+		}
+		if cred.IsExpired == true {
+			isExpired <- true
+
+		} else {
+			isExpired <- false
+
+		}
+		return
+	}(token, tenant, UserId)
+
+	for range 2 {
+		tResult := <-isExpired
+		if tResult == true {
+			return true
+		}
+	}
+	return false
 }
 
 func ValidateToken(tokenString string, secret string) (*models.JWTClaimsModel, error) {
