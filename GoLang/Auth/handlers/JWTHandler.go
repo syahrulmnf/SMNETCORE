@@ -1,6 +1,8 @@
 package handlers
 
 import (
+	"auth-go/cache"
+	"auth-go/common"
 	"auth-go/configs"
 	authgorm "auth-go/gorm"
 	"auth-go/middleware"
@@ -67,6 +69,16 @@ func (h *JWTHandler) Logout(c *gin.Context) {
 		c.JSON(http.StatusServiceUnavailable, gin.H{"error": "Authentication service is unavailable"})
 		return
 	}
+	expired := make(chan bool)
+	go func(t string) {
+		erExp := cache.SetJWTExpired(token)
+		if erExp == nil {
+			expired <- true
+		} else {
+			expired <- false
+		}
+	}(token)
+
 	if err := usersRepo.ExpireLoginCred(token, tenant, jwtClaims.UserID); err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
 			c.Status(http.StatusNoContent)
@@ -88,8 +100,17 @@ func (h *JWTHandler) Login(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "Username and password are required"})
 		return
 	}
-
+	genericRepo := &repositories.GenericRepo{}
 	tenant := c.GetString(middleware.TenantKey)
+	if err := genericRepo.CreateByTenant(); err == nil && tenant == common.GlobalsData.GeneralTenant {
+		tenantT, errT := genericRepo.GetGenericTenant(request.Username)
+		if errT != nil {
+			c.JSON(http.StatusServiceUnavailable, gin.H{"error": "Authentication service is unavailable"})
+			return
+		}
+		tenant = tenantT
+	}
+
 	usersRepo := &repositories.UsersRepo{}
 	if err := usersRepo.CreateByTenant(tenant); err != nil {
 		c.JSON(http.StatusServiceUnavailable, gin.H{"error": "Authentication service is unavailable"})
@@ -167,6 +188,7 @@ func (h *JWTHandler) Login(c *gin.Context) {
 		Active:    true,
 		AppName:   "Web",
 		AuthType:  authgorm.AuthType["Login"],
+		Roles:     strings.Join(roles, ","),
 	}
 	if err := usersRepo.SaveLoginCred(loginCred); err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Could not save login"})

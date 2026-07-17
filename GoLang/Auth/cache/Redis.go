@@ -176,7 +176,8 @@ func IsJWTExpired(jwtKey string) bool {
 	return data
 }
 
-func setJWTExpired(jwtKey string) {
+func SetJWTExpired(jwtKey string) error {
 	key := extensions.Format(JWTAuthKeyExpired, map[string]string{"key": jwtKey})
-	SaveData(key, false, nil)
+	err := SaveData(key, false, nil)
+	return err
 }

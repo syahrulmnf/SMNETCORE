@@ -1,7 +1,9 @@
 package configs
 
 import (
+	"auth-go/extensions"
 	"auth-go/logger"
+	"sort"
 )
 
 var DBDriversType []string = []string{
@@ -22,57 +24,82 @@ type DBConfigs struct {
 }
 
 func GetDBConfigs(tenant string) (*DBConfigs, error) {
-	dbc := &DBConfigs{}
-	dbConfig, ok := AppConfig.Values["Database"]
-	if ok && dbConfig != nil {
-		// dbConfig is expected to be map[string]any -> tenant -> map[string]any
-		dbMap, ok := dbConfig.(map[string]any)
-		if !ok || dbMap == nil {
-			logger.Logger.Error("Database config invalid structure")
-			panic("Database config invalid")
-		}
 
-		var tenantMap map[string]any
-		if v, exists := dbMap[tenant]; exists && v != nil {
-			if m, ok := v.(map[string]any); ok {
-				tenantMap = m
-			}
-		}
-		if tenantMap == nil {
-			if v, exists := dbMap["Generic"]; exists && v != nil {
-				if m, ok := v.(map[string]any); ok {
-					tenantMap = m
-				}
-			}
-		}
-		if tenantMap == nil {
-			logger.Logger.Error("Database config was not found", "Tenant: ", tenant)
-			panic("Data was not found")
-		}
-
-		// helper to read string values
-		getStr := func(key string) string {
-			if val, ok := tenantMap[key]; ok && val != nil {
-				if s, ok := val.(string); ok {
-					return s
-				}
-			}
-			return ""
-		}
-		dbc = &DBConfigs{
-			Drivers:  getStr("drivers"),
-			Host:     getStr("db_host"),
-			Port:     getStr("db_port"),
-			User:     getStr("db_user"),
-			Password: getStr("db_password"),
-			DBName:   getStr("db_name"),
-		}
+	if len(DBConfigsData) == 0 {
+		LoadDBConfigs()
 	}
-	return dbc, nil
+	dbConfig, ok := DBConfigsData["Database"]
+	if ok && dbConfig != nil {
+		return dbConfig, nil
+	}
+
+	if !ok || dbConfig == nil {
+		logger.Logger.Error("Database config invalid structure")
+		panic("Database config invalid")
+	}
+	panic("Database config invalid")
 }
 
 func (t *DBConfigs) Get(tenant string) (bool, error) {
 	dbConfig, _ := GetDBConfigs(tenant)
 	t = dbConfig
 	return true, nil
+}
+
+var DBConfigsData map[string]*DBConfigs
+
+func LoadDBConfigs() {
+	DBConfigsData = GetDatabasesList()
+}
+
+// configuredDatabases converts the Database configuration section into a
+// stable list so all database checks can safely run in parallel.
+func GetDatabasesList() map[string]*DBConfigs {
+	databaseValue, exists := AppConfig.Values["Database"]
+	if !exists || databaseValue == nil {
+		return nil
+	}
+
+	databaseMap, ok := databaseValue.(map[string]any)
+	if !ok {
+		return nil
+	}
+
+	names := make([]string, 0, len(databaseMap))
+	for name := range databaseMap {
+		names = append(names, name)
+	}
+	sort.Strings(names)
+
+	result := make(map[string]*DBConfigs)
+	for _, name := range names {
+		if config := databaseConfig(databaseMap[name]); config != nil {
+			result[name] = config
+		}
+	}
+	return result
+}
+
+func databaseConfig(value any) *DBConfigs {
+	if config, ok := value.(*DBConfigs); ok && config != nil {
+		copy := *config
+		return &copy
+	}
+	if config, ok := value.(DBConfigs); ok {
+		return &config
+	}
+
+	values, ok := value.(map[string]any)
+	if !ok {
+		return nil
+	}
+
+	return &DBConfigs{
+		Drivers:  extensions.MapValueToString(values, "drivers"),
+		Host:     extensions.MapValueToString(values, "db_host"),
+		Port:     extensions.MapValueToString(values, "db_port"),
+		User:     extensions.MapValueToString(values, "db_user"),
+		Password: extensions.MapValueToString(values, "db_password"),
+		DBName:   extensions.MapValueToString(values, "db_name"),
+	}
 }

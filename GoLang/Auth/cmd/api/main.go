@@ -11,6 +11,7 @@ import (
 func main() {
 	configs.AppConfig = &configs.AppConfigs{}
 	configs.AppConfig.Loads()
+	configs.LoadDBConfigs()
 	cache.Load()
 
 	router := gin.Default()

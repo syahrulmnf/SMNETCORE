@@ -45,7 +45,7 @@ func (d *DBDriver) Connect() error {
 	}
 	sqlDB, err := db.DB()
 	if err != nil {
-		log.Fatalf("Failed to extract sql.DB instance: %v", err)
+		log.Printf("Failed to extract sql.DB instance: %v", err)
 		return err
 	}
 
@@ -55,7 +55,7 @@ func (d *DBDriver) Connect() error {
 
 	// 3. Ping the database to verify the network connection is alive
 	if err := sqlDB.PingContext(ctx); err != nil {
-		log.Fatalf("Database connection is dead: %v", err)
+		log.Printf("Database connection is dead: %v", err)
 		return err
 	}
 	sqlDB.SetMaxOpenConns(50)
